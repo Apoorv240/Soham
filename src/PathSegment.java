@@ -31,6 +31,6 @@ public class PathSegment {
     }
 
     public Pose calcLocation(double t) {
-        return new Pose(startPose.x + movementVector[0]*t, startPose.y + movementVector[1]*t, startPose.headingRadians + movementVector[2]*t);
+        return new Pose(startPose.x + (movementVector[0] * t), startPose.y + (movementVector[1] * t), startPose.headingRadians + (movementVector[2] * t));
     }
 }
