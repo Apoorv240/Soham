@@ -7,9 +7,6 @@ public class PathSegment {
     // Linear
     double[] movementVector; // [x, y, heading]
 
-    // Spline
-    Pose[] waypoints;
-
     public PathSegment(Pose startPose, Pose endPose, PathType pathType, InterpolationType headingInterpType) {
         this.startPose = startPose;
         this.endPose = endPose;
@@ -19,19 +16,12 @@ public class PathSegment {
         movementVector = new double[3];
     }
 
-    public PathSegment(Pose startPose, Pose endPose, InterpolationType headingInterpType, PathType pathType, Pose[] waypoints) {
-        this.startPose = startPose;
-        this.endPose = endPose;
-        this.headingInterpType = headingInterpType;
-        this.pathType = pathType;
-        this.waypoints = waypoints;
-    }
-
     public void generatePath() {
         if (pathType == PathType.Linear) {
             movementVector[0] = endPose.x - startPose.x;
             movementVector[1] = endPose.y - startPose.y;
         } else if (pathType == PathType.Spline) {
+            // Kinodynamic Motion Planning for Mobile Robots Using Splines (Lau, Sprunk, Burgard)
 
         }
 
