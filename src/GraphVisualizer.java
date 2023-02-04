@@ -1,7 +1,7 @@
-import javax.sound.sampled.Line;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
 
 public class GraphVisualizer {
     int frameSize;
@@ -14,6 +14,11 @@ public class GraphVisualizer {
 
     public void displayGraph() {
         frame.showUI();
+    }
+
+    public void addPoint(Pose point) {
+        frame.panel.points.add(point);
+        frame.repaint();
     }
 
     static class CartesianFrame extends JFrame {
@@ -36,9 +41,15 @@ public class GraphVisualizer {
     static class CartesianPanel extends JPanel {
         int planeBounds;
         final double spacing = 20.0;
+        ArrayList<Pose> points = new ArrayList<>();
 
         public CartesianPanel(int planeBounds) {
             this.planeBounds = planeBounds;
+        }
+
+        public CartesianPanel(int planeBounds, ArrayList<Pose> points) {
+            this.planeBounds = planeBounds;
+            this.points = points;
         }
 
         protected void paintComponent(Graphics g) {
@@ -50,13 +61,26 @@ public class GraphVisualizer {
             int width = this.getWidth();
             int height = this.getHeight();
 
-            // Draw the base plane
-            g2.draw(new Line2D.Double(width / spacing, height / 2.0, width - (width / spacing), height / 2.0));
-            g2.draw(new Line2D.Double(width / 2.0, height / spacing, width / 2.0, height - (height / spacing)));
-
             // only the width and height of one side
             double planeWidth = (width - ((2 * width) / spacing)) / 2;
             double planeHeight = (height - ((2 * height) / spacing)) / 2;
+
+            drawPlane(g2, width, height, planeWidth, planeHeight);
+            drawDynamic(g2, width, height, planeWidth, planeHeight);
+        }
+
+        void drawDynamic(Graphics2D g2, int width, int height, double planeWidth, double planeHeight) {
+            g2.setColor(Color.BLUE);
+
+            for (Pose point : points) {
+                g2.drawOval((int) ((width / 2.0) + (point.x * (planeWidth / planeBounds))), (int) ((height / 2.0) + (point.y * (planeHeight / planeBounds))), 5, 5);
+            }
+        }
+
+        void drawPlane(Graphics2D g2, int width, int height, double planeWidth, double planeHeight) {
+            // Draw the base plane
+            g2.draw(new Line2D.Double(width / spacing, height / 2.0, width - (width / spacing), height / 2.0));
+            g2.draw(new Line2D.Double(width / 2.0, height / spacing, width / 2.0, height - (height / spacing)));
 
             // Draw the plane ticks
             for(int i = 1; i <= planeBounds; i++) {

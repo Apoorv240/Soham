@@ -10,7 +10,12 @@ public class Main {
         System.out.println(segLinear.calcLocation(0.5));
         System.out.println(segLinear.calcLocation(1));
 
-        GraphVisualizer visualizer = new GraphVisualizer(500, 10);
+        GraphVisualizer visualizer = new GraphVisualizer(500, 5);
+
+        visualizer.addPoint(segLinear.calcLocation(0));
+        visualizer.addPoint(segLinear.calcLocation(0.5));
+        visualizer.addPoint(segLinear.calcLocation(1));
+
         visualizer.displayGraph();
 
     }
