@@ -3,11 +3,15 @@ public class Main {
         Pose startPos = new Pose(4, -1, 0);
         Pose endPos = new Pose(1, 1, 15);
 
-        PathSegment seg = new PathSegment(startPos, endPos, PathType.Linear, InterpolationType.Linear);
-        seg.generatePath();
+        PathSegment segLinear = new PathSegment(startPos, endPos, PathType.Linear, InterpolationType.Linear);
+        segLinear.generatePath();
 
-        System.out.println(seg.calcLocation(0));
-        System.out.println(seg.calcLocation(0.5));
-        System.out.println(seg.calcLocation(1));
+        System.out.println(segLinear.calcLocation(0));
+        System.out.println(segLinear.calcLocation(0.5));
+        System.out.println(segLinear.calcLocation(1));
+
+        GraphVisualizer visualizer = new GraphVisualizer(500, 20);
+        visualizer.displayGraph();
+
     }
 }
