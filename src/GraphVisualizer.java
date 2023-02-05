@@ -73,9 +73,9 @@ public class GraphVisualizer {
             g2.setStroke(new BasicStroke(3));
             for (int i = 0; i < points.size(); i++) {
                 Pose point = points.get(i);
-                g2.setColor(Color.getHSBColor((float) (0.5 + (i * (0.3 / points.size()))), 1f, 0.7f));
+                g2.setColor(Color.getHSBColor((float) (0.8 - (i * (0.3 / points.size()))), 1f, 0.7f));
 
-                g2.drawOval((int) ((width / 2.0) + (point.x * (planeWidth / planeBounds))), (int) ((height / 2.0) + (point.y * (planeHeight / planeBounds))), 5, 5);
+                g2.drawOval((int) ((width / 2.0) + (point.x * (planeWidth / planeBounds))), (int) ((height / 2.0) - (point.y * (planeHeight / planeBounds))), 5, 5);
             }
         }
 
