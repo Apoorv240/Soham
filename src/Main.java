@@ -9,8 +9,9 @@ public class Main {
         GraphVisualizer visualizer = new GraphVisualizer(500, 5);
 
         // must add the points in order for the color shading to work correctly
-        for(float i = 0f; i <= 1f; i += 0.1f) {
-            visualizer.addPoint(segLinear.calcLocation(i));
+        for(int i = 0; i <= 10; i += 1) {
+            visualizer.addPoint(segLinear.calcLocation(i / 10.0));
+            System.out.println(segLinear.calcLocation(i / 10.0) + " " + i / 10.0);
         }
 
         visualizer.displayGraph();
