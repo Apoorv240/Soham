@@ -2,8 +2,10 @@ public class Main {
     public static void main(String[] args) {
         Pose startPos = new Pose(0, 0, 0);
         Pose endPos = new Pose(4, 4, 15);
+        Point p1 = new Point(0, 2);
+        Point p2 = new Point(4, 2);
 
-        PathSegment segLinear = new PathSegment(startPos, endPos, PathType.Linear, InterpolationType.Linear);
+        PathSegment segLinear = new PathSegment(startPos, endPos, PathType.Spline, InterpolationType.Linear, p1, p2);
         segLinear.generatePath();
 
         GraphVisualizer visualizer = new GraphVisualizer(500, 5);
@@ -13,6 +15,9 @@ public class Main {
             visualizer.addPoint(segLinear.calcLocation(i / 10.0));
             System.out.println(segLinear.calcLocation(i / 10.0) + " " + i / 10.0);
         }
+
+        visualizer.addPoint(p1);
+        visualizer.addPoint(p2);
 
         visualizer.displayGraph();
 
