@@ -1,5 +1,3 @@
-import java.text.DecimalFormat;
-
 public class Curve {
     Point startPoint, endPoint;
     public Point p1, p2;
