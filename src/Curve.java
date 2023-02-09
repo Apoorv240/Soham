@@ -9,6 +9,13 @@ public class Curve {
         this.p2 = p2;
     }
 
+    public Curve() {
+        this.startPoint = new Point();
+        this.endPoint = new Point();
+        this.p1 = new Point();
+        this.p2 = new Point();
+    }
+
     public Point calculateCurveLocation(double t) {
         // garbage collector WWW
         double x0 = startPoint.x;
@@ -20,24 +27,17 @@ public class Curve {
         double y2 = p2.y;
         double y3 = endPoint.y;
 
-        double tX0 = x0 + t * (x1 - x0);
-        double tX1 = x1 + t * (x2 - x1);
-        double tX3 = x2 + t * (x3 - x2);
-
-        double tX2 = tX0 + t * (tX1 - tX0);
-        double tX4 = tX1 + t * (tX3 - tX1);
-
-        double tY0 = y0 + t * (y1 - y0);
-        double tY1 = y1 + t * (y2 - y1);
-        double tY3 = y2 + t * (y3 - y2);
-
-        double tY2 = tY0 + t * (tY1 - tY0);
-        double tY4 = tY1 + t * (tY3 - tY1);
-
-        double x = tX2 + t * (tX4 - tX2);
-        double y = tY2 + t * (tY4 - tY2);
+        double x = x0 * (1 - 3*t + 3*t*t - t*t*t) +
+                x1 * (3*t - 6*t*t + 3*t*t*t) +
+                x2 * (3*t*t - 3*t*t*t) +
+                x3 * (t*t*t);
+        double y = y0 * (1 - 3*t + 3*t*t - t*t*t) +
+                y1 * (3*t - 6*t*t + 3*t*t*t) +
+                y2 * (3*t*t - 3*t*t*t) +
+                y3 * (t*t*t);
 
         return new Point(x, y);
+
     }
 
 }

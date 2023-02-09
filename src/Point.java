@@ -6,4 +6,11 @@ public class Point {
         this.x = x;
         this.y = y;
     }
+
+    public Point(Pose pose) {
+        this.x = pose.x;
+        this.y = pose.y;
+    }
+
+    public Point() {}
 }
