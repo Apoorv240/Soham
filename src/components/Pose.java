@@ -1,3 +1,5 @@
+package components;
+
 public class Pose {
     public double x;
     public double y;
@@ -11,7 +13,7 @@ public class Pose {
 
     @Override
     public String toString() {
-        return "Pose{" +
+        return "res.Pose{" +
                 "x=" + x +
                 ", y=" + y +
                 ", headingRadians=" + headingRadians +

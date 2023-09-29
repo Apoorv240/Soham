@@ -1,11 +1,14 @@
+package graphics;
+
+import components.Point;
+import components.Pose;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 public class GraphVisualizer {
-    int frameSize;
-    int planeBounds;
     CartesianFrame frame;
 
     public GraphVisualizer(int frameSize, int planeBounds) {
@@ -22,7 +25,7 @@ public class GraphVisualizer {
         frame.repaint();
     }
 
-    public void addPoint(Point point) {
+    public void addPoint(components.Point point) {
         // use solid red color to paint bezier control points
         frame.panel.outsidePoints.add(point);
         frame.repaint();
@@ -86,7 +89,7 @@ public class GraphVisualizer {
                 g2.drawOval((int) ((width / 2.0) + (point.x * (planeWidth / planeBounds))) - 3, (int) ((height / 2.0) - (point.y * (planeHeight / planeBounds))) - 3, 6, 6);
             }
             g2.setColor(Color.RED);
-            for (Point point : outsidePoints) {
+            for (components.Point point : outsidePoints) {
                 g2.drawOval((int) ((width / 2.0) + (point.x * (planeWidth / planeBounds))) - 3, (int) ((height / 2.0) - (point.y * (planeHeight / planeBounds))) - 3, 6, 6);
             }
         }

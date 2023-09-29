@@ -1,3 +1,8 @@
+import components.Curve;
+import components.InterpolationType;
+import components.Point;
+import components.Pose;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,17 +51,18 @@ public class PathSegment {
         this.p2 = p2;
     }
 
+    // TODO: Add interpolation between points
     void pointsToCurves() {
-//        curves.add(new Curve());
-//        curves.get(0).startPoint = new Point(startPose);
+//        curves.add(new res.Curve());
+//        curves.get(0).startPoint = new res.Point(startPose);
 //
 //        for (int i = 1; i < waypoints.length; i++) {
-//            curves.get(i-1).endPoint = new Point(waypoints[i]);
-//            curves.add(new Curve());
-//            curves.get(i).startPoint = new Point(waypoints[i]);
+//            curves.get(i-1).endPoint = new res.Point(waypoints[i]);
+//            curves.add(new res.Curve());
+//            curves.get(i).startPoint = new res.Point(waypoints[i]);
 //        }
 //
-//        curves.get(curves.size()-1).endPoint = new Point(endPose);
+//        curves.get(curves.size()-1).endPoint = new res.Point(endPose);
     }
 
     void smooth() {

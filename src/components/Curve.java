@@ -1,3 +1,5 @@
+package components;
+
 public class Curve {
     Point startPoint, endPoint;
     public Point p1, p2;
@@ -27,6 +29,7 @@ public class Curve {
         double y2 = p2.y;
         double y3 = endPoint.y;
 
+        // Note that equations are calculated on time and not position intervals
         double x = x0 * (1 - 3*t + 3*t*t - t*t*t) +
                 x1 * (3*t - 6*t*t + 3*t*t*t) +
                 x2 * (3*t*t - 3*t*t*t) +
