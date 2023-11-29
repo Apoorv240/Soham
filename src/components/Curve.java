@@ -1,33 +1,34 @@
 package components;
 
 public class Curve {
-    Point startPoint, endPoint;
+    Pose startPose, endPose;
     public Point p1, p2;
 
     public Curve(Pose startPose, Pose endPose, Point p1, Point p2) {
-        this.startPoint = new Point(startPose.x, startPose.y);
-        this.endPoint = new Point(endPose.x, endPose.y);
+        this.startPose = startPose;
+        this.endPose = endPose;
         this.p1 = p1;
         this.p2 = p2;
     }
 
     public Curve() {
-        this.startPoint = new Point();
-        this.endPoint = new Point();
+        this.startPose = new Pose();
+        this.endPose = new Pose();
         this.p1 = new Point();
         this.p2 = new Point();
     }
 
     public Point calculateCurveLocation(double t) {
         // garbage collector WWW
-        double x0 = startPoint.x;
+        // most of this will probably be optimized away by the compiler anyways lol
+        double x0 = startPose.x;
         double x1 = p1.x;
         double x2 = p2.x;
-        double x3 = endPoint.x;
-        double y0 = startPoint.y;
+        double x3 = endPose.x;
+        double y0 = startPose.y;
         double y1 = p1.y;
         double y2 = p2.y;
-        double y3 = endPoint.y;
+        double y3 = endPose.y;
 
         // Note that equations are calculated on time and not position intervals
         double x = x0 * (1 - 3*t + 3*t*t - t*t*t) +
@@ -43,4 +44,13 @@ public class Curve {
 
     }
 
+    @Override
+    public String toString() {
+        return "Curve{" +
+                "startPoint=" + startPose +
+                ", endPoint=" + endPose +
+                ", p1=" + p1 +
+                ", p2=" + p2 +
+                '}';
+    }
 }

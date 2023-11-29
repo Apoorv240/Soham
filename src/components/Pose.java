@@ -11,6 +11,8 @@ public class Pose {
         this.headingRadians = headingRadians;
     }
 
+    public Pose() {}
+
     @Override
     public String toString() {
         return "res.Pose{" +
