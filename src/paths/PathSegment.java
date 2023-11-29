@@ -1,3 +1,5 @@
+package paths;
+
 import components.Curve;
 import components.InterpolationType;
 import components.Point;
@@ -11,7 +13,7 @@ public class PathSegment {
     Pose endPose;
     InterpolationType headingInterpType;
     PathType pathType;
-    Point p1, p2;
+    public Point p1, p2;
 
     // Linear
     double[] movementVector; // [x, y, heading]
@@ -49,6 +51,8 @@ public class PathSegment {
 
         this.p1 = p1;
         this.p2 = p2;
+
+        this.generatePath();
     }
 
     // TODO: Add interpolation between points
@@ -98,5 +102,21 @@ public class PathSegment {
             // unrecognized path type
             return new Pose(0, 0, 0);
         }
+    }
+
+    public void setStartPoint(Pose pose) {
+        this.startPose = pose;
+    }
+
+    public void setEndPoint(Pose pose) {
+        this.endPose = pose;
+    }
+
+    public Pose getStartPoint() {
+        return startPose;
+    }
+
+    public Pose getEndPoint() {
+        return endPose;
     }
 }
