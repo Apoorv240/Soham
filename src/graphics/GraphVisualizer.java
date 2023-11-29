@@ -5,8 +5,12 @@ import components.Pose;
 import paths.PathSegment;
 
 import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +22,16 @@ public class GraphVisualizer {
     int numPoses = 10;
 
     public GraphVisualizer(int frameSize, int planeBounds) {
-        frame = new CartesianFrame(frameSize, planeBounds);
+        frame = new CartesianFrame(frameSize, planeBounds, this);
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setSize(500, 500);
+        frame.setLocationRelativeTo(null);
+    }
+
+    public GraphVisualizer(CartesianFrame frame) {
+        this.frame = frame;
     }
 
     public void displayGraph() {
@@ -36,7 +49,7 @@ public class GraphVisualizer {
         for(int i = 1; i < numPoses; i += 1) {
             this.addPoint(segment, segment.calcLocation(i / (double) numPoses));
             // TODO: Print this somewhere on the GUI
-            System.out.println(segment.calcLocation(i / (double) numPoses) + " " + i / (double) numPoses);
+//            System.out.println(segment.calcLocation(i / (double) numPoses) + " " + i / (double) numPoses);
         }
         this.addPoint(segment, segment.p1);
         this.addPoint(segment, segment.p2);
@@ -96,16 +109,21 @@ public class GraphVisualizer {
         frame.repaint();
     }
 
-    static class CartesianFrame extends JFrame {
+    class CartesianFrame extends JFrame {
+        public int frameSize;
+        public int planeBounds;
         CartesianPanel panel;
+        GraphVisualizer parent;
 
-        public CartesianFrame(int frameSize, int planeBounds) {
+        public CartesianFrame(int frameSize, int planeBounds, GraphVisualizer visualizer) {
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setTitle("Graph Visualizer");
             setSize(frameSize, frameSize);
 
-            panel = new CartesianPanel(planeBounds);
+            panel = new CartesianPanel(planeBounds, this);
             add(panel);
+
+            this.parent = visualizer;
         }
 
         public void showUI() {
@@ -113,7 +131,7 @@ public class GraphVisualizer {
         }
     }
 
-    static class CartesianPanel extends JPanel {
+    class CartesianPanel extends JPanel {
         int width;
         int height;
         double planeWidth;
@@ -127,15 +145,16 @@ public class GraphVisualizer {
         // Control points outside the spline
         Map<PathSegment, List<Point>> outsidePoints = new HashMap<>();
 
-        public CartesianPanel(int planeBounds) {
+        CartesianFrame parent;
+
+        public CartesianPanel(int planeBounds, CartesianFrame frame) {
             this.planeBounds = planeBounds;
-            setOpaque(false);
+            this.parent = frame;
         }
 
         public CartesianPanel(int planeBounds, Map<PathSegment, List<Pose>> points) {
             this.planeBounds = planeBounds;
             this.points = points;
-            setOpaque(false);
         }
 
         protected void paintComponent(Graphics g) {
@@ -154,21 +173,6 @@ public class GraphVisualizer {
             drawPlane(g2, width, height, planeWidth, planeHeight);
             drawDynamic(g2, width, height, planeWidth, planeHeight);
             drawUI(g2, width, height, planeWidth, planeHeight);
-
-            for (List<Pose> list:
-                    positionPoints.values()) {
-                for (Pose point : list) {
-                    GraphListener listener = new GraphListener();
-                    DraggablePoint p = new DraggablePoint(point.x, point.y, width, height, planeWidth, planeHeight, planeBounds);
-                    p.setPreferredSize(new Dimension(6, 6));
-                    p.setSize(p.getPreferredSize());
-                    p.addMouseListener(listener);
-                    p.addMouseMotionListener(listener);
-                    add(p);
-                    revalidate();
-                    repaint();
-                }
-            }
         }
 
         void drawUI(Graphics2D g2, int width, int height, double planeWidth, double planeHeight) {
@@ -181,15 +185,16 @@ public class GraphVisualizer {
         void drawDynamic(Graphics2D g2, int width, int height, double planeWidth, double planeHeight) {
             g2.setStroke(new BasicStroke(3));
 
-            for (List<Pose> list :
-                    positionPoints.values()) {
-                for (Pose point : list) {
+            for (Map.Entry<PathSegment, List<Pose>> entry :
+                    positionPoints.entrySet()) {
+                List<Pose> list = entry.getValue();
+                for (int i = 0; i < list.size(); i++) {
+                    Pose point = list.get(i);
                     GraphListener listener = new GraphListener();
-                    DraggablePoint p = new DraggablePoint(point.x, point.y, width, height, planeWidth, planeHeight, planeBounds);
-                    p.setSize(p.getPreferredSize());
+                    DraggablePoint p = new DraggablePoint(point.x, point.y, width, height, planeWidth, planeHeight, planeBounds, Color.BLACK, entry.getKey(), true, i==0);
                     p.addMouseListener(listener);
                     p.addMouseMotionListener(listener);
-                    this.add(p);
+                    add(p);
                 }
             }
 
@@ -203,11 +208,16 @@ public class GraphVisualizer {
                 }
             }
 
-            g2.setColor(Color.RED);
-            for (List<Point> list :
-                    outsidePoints.values()) {
-                for (components.Point point : list) {
-                    g2.drawOval((int) ((width / 2.0) + (point.x * (planeWidth / planeBounds))) - 3, (int) ((height / 2.0) - (point.y * (planeHeight / planeBounds))) - 3, 6, 6);
+            for (Map.Entry<PathSegment, List<Point>> entry :
+                    outsidePoints.entrySet()) {
+                List<Point> list = entry.getValue();
+                for (int i = 0; i < list.size(); i++) {
+                    Point point = list.get(i);
+                    GraphListener listener = new GraphListener();
+                    DraggablePoint p = new DraggablePoint(point.x, point.y, width, height, planeWidth, planeHeight, planeBounds, Color.RED, entry.getKey(), false, i == 0);
+                    p.addMouseListener(listener);
+                    p.addMouseMotionListener(listener);
+                    add(p);
                 }
             }
         }
@@ -236,9 +246,19 @@ public class GraphVisualizer {
         double height;
         double planeWidth;
         double planeHeight;
-        double planeBounds;
+        int planeBounds;
 
-        public DraggablePoint(double x, double y, double width, double height, double planeWidth, double planeHeight, double planeBounds) {
+        PathSegment segment;
+        boolean isPosition;
+        boolean isFirst;
+
+        Color color;
+
+        public DraggablePoint(double x, double y, double width, double height, double planeWidth, double planeHeight, int planeBounds, Color color, PathSegment segment, boolean isPosition, boolean isFirst) {
+            super();
+            this.setLocation((int) ((width / 2.0) + (x * (planeWidth / planeBounds))) - 6, (int) ((height / 2.0) - (y * (planeHeight / planeBounds))) - 6);
+            this.setSize(20, 20);
+
             this.x = x;
             this.y = y;
             this.width = width;
@@ -246,6 +266,12 @@ public class GraphVisualizer {
             this.planeWidth = planeWidth;
             this.planeHeight = planeHeight;
             this.planeBounds = planeBounds;
+            this.color = color;
+
+            this.segment = segment;
+            this.isPosition = isPosition;
+            // true means start if position point, p1 if control point
+            this.isFirst = isFirst;
         }
 
         protected void paintComponent(Graphics g) {
@@ -253,14 +279,29 @@ public class GraphVisualizer {
             Graphics2D g2 = (Graphics2D) g;
 
             g2.setStroke(new BasicStroke(3));
-            g2.setColor(Color.BLACK);
+            g2.setColor(color);
 
-            g2.drawOval((int) ((width / 2.0) + (x * (planeWidth / planeBounds))) - 3, (int) ((height / 2.0) - (y * (planeHeight / planeBounds))) - 3, 6, 6);
+            g2.drawOval(3, 3, 6, 6);
         }
 
-        @Override
-        public Dimension getPreferredSize() {
-            return new Dimension(6, 6);
+        public double getOverallWidth() {
+            return width;
+        }
+
+        public double getOverallHeight() {
+            return height;
+        }
+
+        public double getPlaneWidth() {
+            return planeWidth;
+        }
+
+        public double getPlaneHeight() {
+            return planeHeight;
+        }
+
+        public int getPlaneBounds() {
+            return planeBounds;
         }
     }
 
