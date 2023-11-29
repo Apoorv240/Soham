@@ -34,7 +34,5 @@ public class GraphListener extends MouseInputAdapter
                     new components.Point(point.planeBounds * (x + 6 - (point.getOverallWidth() / 2)) / point.planeWidth, (point.planeBounds * (y + 6 - (point.getOverallHeight() / 2))) / -point.planeHeight),
                     point.isFirst ? 1 : 2);
         }
-        panel.revalidate();
-        panel.repaint();
     }
 }

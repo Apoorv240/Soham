@@ -58,18 +58,21 @@ public class GraphVisualizer {
     public void addPositionPoint(PathSegment segment, Pose point) {
         // use solid black color to paint bezier end points
         frame.panel.positionPoints.get(segment).add(point);
+        frame.revalidate();
         frame.repaint();
     }
 
     public void addPoint(PathSegment segment, Pose point) {
         // paint with normal gradient
         frame.panel.points.get(segment).add(point);
+        frame.revalidate();
         frame.repaint();
     }
 
     public void addPoint(PathSegment segment, Point point) {
         // use solid red color to paint bezier control points
         frame.panel.outsidePoints.get(segment).add(point);
+        frame.revalidate();
         frame.repaint();
     }
 
@@ -88,6 +91,7 @@ public class GraphVisualizer {
         frame.panel.outsidePoints.get(segment).clear();
         frame.panel.points.get(segment).clear();
         this.addPath(segment);
+        frame.revalidate();
         frame.repaint();
     }
 
@@ -106,6 +110,7 @@ public class GraphVisualizer {
         frame.panel.outsidePoints.get(segment).clear();
         frame.panel.points.get(segment).clear();
         this.addPath(segment);
+        frame.revalidate();
         frame.repaint();
     }
 
