@@ -1,12 +1,9 @@
-import graphics.GraphVisualizer;
 import components.InterpolationType;
 import components.Point;
 import components.Pose;
+import graphics.GraphVisualizer;
 import paths.PathSegment;
 import paths.PathType;
-
-import javax.sound.sampled.Line;
-import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) {
@@ -29,6 +26,8 @@ public class Main {
         visualizer.addPath(segCustom);
 
         visualizer.displayGraph();
+
+        visualizer.animatePath(seg, 2000);
 
     }
 }

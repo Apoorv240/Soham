@@ -1,12 +1,17 @@
 package graphics;
 
+import components.InterpolationType;
 import components.Point;
 import components.Pose;
 import paths.PathSegment;
+import paths.PathType;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +33,42 @@ public class GraphVisualizer {
 
     public void displayGraph() {
         frame.showUI();
+    }
+
+    public void animatePath(PathSegment segment, int timeLength) {
+        Instant start = Instant.now();
+        long timeElapsed = 0;
+        Instant now;
+
+        Pose pose = segment.calcLocation(0);
+        StaticPoint point;
+
+        int frameRate = 100; // FPS
+        int frameInMs = 1000 / frameRate;
+
+        List<Pose> frames = new ArrayList<>();
+
+        PathSegment seg = new PathSegment(segment.getStartPoint(), segment.getEndPoint(), PathType.Spline, InterpolationType.Linear, segment.p1, segment.p2);
+        while(true) {
+            if (!segment.equals(seg)) {
+                seg = new PathSegment(segment.getStartPoint(), segment.getEndPoint(), PathType.Spline, InterpolationType.Linear, segment.p1, segment.p2);;
+                frames.clear();
+            }
+            now = Instant.now();
+            timeElapsed = Duration.between(start, now).toMillis();
+            if ((timeElapsed % timeLength) % frameInMs < 5) {
+                if (frames.size() == frameRate*(timeLength/1000))
+                    pose = frames.get((int) ((timeElapsed % timeLength) / (double) timeLength) * frameRate*(timeLength/1000));
+                else {
+                    pose = segment.calcLocation((timeElapsed % timeLength) / (double) timeLength);
+                    frames.add(pose);
+                }
+                frame.panel.revalidate();
+                frame.panel.repaint();
+            }
+            point = new StaticPoint(pose.x, pose.y, frame.panel.width, frame.panel.height, frame.panel.planeWidth, frame.panel.planeHeight, frame.panel.planeBounds, Color.ORANGE);
+            frame.panel.add(point);
+        }
     }
 
     public void addPath(PathSegment segment) {
@@ -286,17 +327,42 @@ public class GraphVisualizer {
         public double getOverallHeight() {
             return height;
         }
+    }
 
-        public double getPlaneWidth() {
-            return planeWidth;
+    static class StaticPoint extends JComponent {
+        double x;
+        double y;
+        double width;
+        double height;
+        double planeWidth;
+        double planeHeight;
+        int planeBounds;
+
+        Color color;
+
+        public StaticPoint(double x, double y, double width, double height, double planeWidth, double planeHeight, int planeBounds, Color color) {
+            super();
+            this.setLocation((int) ((width / 2.0) + (x * (planeWidth / planeBounds))) - 12, (int) ((height / 2.0) - (y * (planeHeight / planeBounds))) - 12);
+            this.setSize(24, 24);
+
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.planeWidth = planeWidth;
+            this.planeHeight = planeHeight;
+            this.planeBounds = planeBounds;
+            this.color = color;
         }
 
-        public double getPlaneHeight() {
-            return planeHeight;
-        }
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
 
-        public int getPlaneBounds() {
-            return planeBounds;
+            g2.setStroke(new BasicStroke(8));
+            g2.setColor(color);
+
+            g2.drawOval(6, 6, 12, 12);
         }
     }
 
