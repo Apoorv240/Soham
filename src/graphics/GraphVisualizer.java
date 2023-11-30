@@ -5,12 +5,8 @@ import components.Pose;
 import paths.PathSegment;
 
 import javax.swing.*;
-import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +26,6 @@ public class GraphVisualizer {
         frame.setLocationRelativeTo(null);
     }
 
-    public GraphVisualizer(CartesianFrame frame) {
-        this.frame = frame;
-    }
-
     public void displayGraph() {
         frame.showUI();
     }
@@ -48,8 +40,6 @@ public class GraphVisualizer {
         this.addPositionPoint(segment, segment.getEndPoint());
         for(int i = 1; i < numPoses; i += 1) {
             this.addPoint(segment, segment.calcLocation(i / (double) numPoses));
-            // TODO: Print this somewhere on the GUI
-//            System.out.println(segment.calcLocation(i / (double) numPoses) + " " + i / (double) numPoses);
         }
         this.addPoint(segment, segment.p1);
         this.addPoint(segment, segment.p2);
@@ -262,7 +252,7 @@ public class GraphVisualizer {
         public DraggablePoint(double x, double y, double width, double height, double planeWidth, double planeHeight, int planeBounds, Color color, PathSegment segment, boolean isPosition, boolean isFirst) {
             super();
             this.setLocation((int) ((width / 2.0) + (x * (planeWidth / planeBounds))) - 6, (int) ((height / 2.0) - (y * (planeHeight / planeBounds))) - 6);
-            this.setSize(20, 20);
+            this.setSize(14, 14);
 
             this.x = x;
             this.y = y;
@@ -283,10 +273,10 @@ public class GraphVisualizer {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
 
-            g2.setStroke(new BasicStroke(3));
+            g2.setStroke(new BasicStroke(4));
             g2.setColor(color);
 
-            g2.drawOval(3, 3, 6, 6);
+            g2.drawOval(4, 4, 6, 6);
         }
 
         public double getOverallWidth() {

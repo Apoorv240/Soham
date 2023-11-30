@@ -35,4 +35,16 @@ public class GraphListener extends MouseInputAdapter
                     point.isFirst ? 1 : 2);
         }
     }
+
+    public void mouseReleased(MouseEvent me) {
+        Component pt = pressed.getComponent();
+        GraphVisualizer.DraggablePoint point = (GraphVisualizer.DraggablePoint) pt;
+        location = point.getLocation(location);
+        int x = location.x - pressed.getX() + me.getX();
+        int y = location.y - pressed.getY() + me.getY();
+
+        // Print location of release to SYSOUT
+        System.out.printf("(%.4f, %.4f)\n", point.planeBounds * (x + 6 - (point.getOverallWidth() / 2)) / point.planeWidth, (point.planeBounds * (y + 6 - (point.getOverallHeight() / 2))) / -point.planeHeight);
+    }
+
 }
