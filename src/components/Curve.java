@@ -4,6 +4,8 @@ public class Curve {
     Pose startPose, endPose;
     public Point p1, p2;
 
+    private int N = 5; // 5th degree spline (quintic)
+
     public Curve(Pose startPose, Pose endPose, Point p1, Point p2) {
         this.startPose = startPose;
         this.endPose = endPose;
@@ -19,8 +21,6 @@ public class Curve {
     }
 
     public Point calculateCurveLocation(double t) {
-        // garbage collector WWW
-        // most of this will probably be optimized away by the compiler anyways lol
         double x0 = startPose.x;
         double x1 = p1.x;
         double x2 = p2.x;
@@ -30,18 +30,39 @@ public class Curve {
         double y2 = p2.y;
         double y3 = endPose.y;
 
-        // Note that equations are calculated on time and not position intervals
-        double x = x0 * (1 - 3*t + 3*t*t - t*t*t) +
-                x1 * (3*t - 6*t*t + 3*t*t*t) +
-                x2 * (3*t*t - 3*t*t*t) +
-                x3 * (t*t*t);
-        double y = y0 * (1 - 3*t + 3*t*t - t*t*t) +
-                y1 * (3*t - 6*t*t + 3*t*t*t) +
-                y2 * (3*t*t - 3*t*t*t) +
-                y3 * (t*t*t);
+        double x = curveComponent(t, 0, x0) +
+                curveComponent(t, 1, x0) +
+                curveComponent(t, 2, x1) +
+                curveComponent(t, 3, x2) +
+                curveComponent(t, 4, x3) +
+                curveComponent(t, 5, x3);
+
+        double y = curveComponent(t, 0, y0) +
+                curveComponent(t, 1, y0) +
+                curveComponent(t, 2, y1) +
+                curveComponent(t, 3, y2) +
+                curveComponent(t, 4, y3) +
+                curveComponent(t, 5, y3);
 
         return new Point(x, y);
+    }
 
+    public int binom(int k) {
+        int factor = 1;
+
+        for (int i = N; i > k; i--) {
+            factor *= i;
+        }
+
+        for (int i = 1; i <= (N-k); i++) {
+            factor /= i;
+        }
+
+        return factor;
+    }
+
+    public double curveComponent(double t, int K, double v) {
+        return binom(K) * Math.pow(1-t, N-K) * Math.pow(t, K) * v;
     }
 
     @Override

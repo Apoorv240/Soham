@@ -9,7 +9,6 @@ import paths.PathType;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ public class GraphVisualizer {
     CartesianFrame frame;
     // Default number of poses generated
     int numPoses = 10;
+    int FPS = 200;
 
     public GraphVisualizer(int frameSize, int planeBounds) {
         frame = new CartesianFrame(frameSize, planeBounds, this);
@@ -36,39 +36,41 @@ public class GraphVisualizer {
     }
 
     public void animatePath(PathSegment segment, int timeLength) {
-        Instant start = Instant.now();
-        long timeElapsed = 0;
-        Instant now;
+        Thread animationThread = new Thread(() -> {
+            Instant start = Instant.now();
+            long timeElapsed = 0;
+            Instant now;
 
-        Pose pose = segment.calcLocation(0);
-        StaticPoint point;
+            Pose pose = segment.calcLocation(0);
+            StaticPoint point;
 
-        int frameRate = 100; // FPS
-        int frameInMs = 1000 / frameRate;
+            int frameInMs = (int) ((double) 1000 / FPS);
 
-        List<Pose> frames = new ArrayList<>();
+            List<Pose> frames = new ArrayList<>();
 
-        PathSegment seg = new PathSegment(segment.getStartPoint(), segment.getEndPoint(), PathType.Spline, InterpolationType.Linear, segment.p1, segment.p2);
-        while(true) {
-            if (!segment.equals(seg)) {
-                seg = new PathSegment(segment.getStartPoint(), segment.getEndPoint(), PathType.Spline, InterpolationType.Linear, segment.p1, segment.p2);;
-                frames.clear();
-            }
-            now = Instant.now();
-            timeElapsed = Duration.between(start, now).toMillis();
-            if ((timeElapsed % timeLength) % frameInMs < 5) {
-                if (frames.size() == frameRate*(timeLength/1000))
-                    pose = frames.get((int) ((timeElapsed % timeLength) / (double) timeLength) * frameRate*(timeLength/1000));
-                else {
-                    pose = segment.calcLocation((timeElapsed % timeLength) / (double) timeLength);
-                    frames.add(pose);
+            PathSegment seg = new PathSegment(segment.getStartPoint(), segment.getEndPoint(), PathType.Spline, InterpolationType.Linear, segment.p1, segment.p2);
+            while(true) {
+                if (!segment.equals(seg)) {
+                    seg = new PathSegment(segment.getStartPoint(), segment.getEndPoint(), PathType.Spline, InterpolationType.Linear, segment.p1, segment.p2);;
+                    frames.clear();
                 }
+                now = Instant.now();
+                timeElapsed = Duration.between(start, now).toMillis();
+                if ((timeElapsed % timeLength) % frameInMs < 10) {
+                    if (frames.size() == FPS*(timeLength/1000))
+                        pose = frames.get((int) ((timeElapsed % timeLength) / (double) timeLength) * FPS*(timeLength/1000));
+                    else {
+                        pose = segment.calcLocation((timeElapsed % timeLength) / (double) timeLength);
+                        frames.add(pose);
+                    }
+                }
+                point = new StaticPoint(pose.x, pose.y, frame.panel.width, frame.panel.height, frame.panel.planeWidth, frame.panel.planeHeight, frame.panel.planeBounds, Color.ORANGE);
+                frame.panel.add(point);
                 frame.panel.revalidate();
-                frame.panel.repaint();
             }
-            point = new StaticPoint(pose.x, pose.y, frame.panel.width, frame.panel.height, frame.panel.planeWidth, frame.panel.planeHeight, frame.panel.planeBounds, Color.ORANGE);
-            frame.panel.add(point);
-        }
+        });
+
+        animationThread.start();
     }
 
     public void addPath(PathSegment segment) {
