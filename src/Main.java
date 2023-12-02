@@ -1,4 +1,3 @@
-import components.Curve;
 import components.InterpolationType;
 import components.Point;
 import components.Pose;
@@ -6,20 +5,15 @@ import graphics.GraphVisualizer;
 import paths.PathSegment;
 import paths.PathType;
 
-public class Main {
-    public static void main(String[] args) {
-        GraphVisualizer visualizer = new GraphVisualizer(500, 3);
-        visualizer.setNumPoses(20);
+import java.io.IOException;
 
-        // Start and end position
-        Pose startPos = new Pose(-2, 2, 0);
-        Pose endPos = new Pose(3, 2.5, 15);
-        // Control points
-        Point p1 = new Point(2, -2);
-        Point p2 = new Point(1.2, 2);
+public class Main {
+    public static void main(String[] args) throws IOException {
+        GraphVisualizer visualizer = new GraphVisualizer(500, 3);
+        visualizer.setNumPoses(15);
 
         // Default spline
-        PathSegment seg = new PathSegment(startPos, endPos, PathType.Spline, InterpolationType.Linear, p1, p2);
+        PathSegment seg = new PathSegment(new Pose(2.5333, 0.5200, 0.00), new Pose(1.4800, 2.2533, 15.00), PathType.Spline, InterpolationType.Linear, new Point(2.0667, 0.5333), new Point(1.6267, 1.5067));
 
         visualizer.addPath(seg);
 

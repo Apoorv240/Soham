@@ -6,9 +6,13 @@ import components.Pose;
 import paths.PathSegment;
 import paths.PathType;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -22,13 +26,18 @@ public class GraphVisualizer {
     int numPoses = 10;
     int FPS = 200;
 
-    public GraphVisualizer(int frameSize, int planeBounds) {
+    int frameWidth = 500, frameHeight = 500;
+
+    String fieldImage = "src/media/centerstage_field.png";
+
+    public GraphVisualizer(int frameSize, int planeBounds) throws IOException {
         frame = new CartesianFrame(frameSize, planeBounds, this);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setSize(500, 500);
+        frame.setSize((int) (frameWidth+(frameWidth/frame.panel.spacing)), (int) (frameHeight+(frameHeight/frame.panel.spacing)*2));
         frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
     }
 
     public void displayGraph() {
@@ -153,15 +162,25 @@ public class GraphVisualizer {
         CartesianPanel panel;
         GraphVisualizer parent;
 
-        public CartesianFrame(int frameSize, int planeBounds, GraphVisualizer visualizer) {
+        public CartesianFrame(int frameSize, int planeBounds, GraphVisualizer visualizer) throws IOException {
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setTitle("Graph Visualizer");
             setSize(frameSize, frameSize);
 
             panel = new CartesianPanel(planeBounds, this);
+            panel.setSize(frameWidth, frameHeight);
+            panel.setOpaque(false);
+
+            BufferedImage backgroundImage = ImageIO.read(new File(fieldImage));
+            JLabel picLabel = new JLabel(new ImageIcon(backgroundImage.getScaledInstance((int) panel.planeWidth*2, (int) panel.planeHeight*2, Image.SCALE_SMOOTH)));
+
+            panel.setLocation(panel.getX()+5, panel.getY()+5);
+
             add(panel);
+            add(picLabel);
 
             this.parent = visualizer;
+
         }
 
         public void showUI() {
@@ -188,11 +207,25 @@ public class GraphVisualizer {
         public CartesianPanel(int planeBounds, CartesianFrame frame) {
             this.planeBounds = planeBounds;
             this.parent = frame;
+
+            width = frameWidth;
+            height = frameHeight;
+
+            // only the width and height of one side
+            planeWidth = (width - ((2 * width) / spacing)) / 2;
+            planeHeight = (height - ((2 * height) / spacing)) / 2;
         }
 
         public CartesianPanel(int planeBounds, Map<PathSegment, List<Pose>> points) {
             this.planeBounds = planeBounds;
             this.points = points;
+
+            width = frameWidth;
+            height = frameHeight;
+
+            // only the width and height of one side
+            planeWidth = (width - ((2 * width) / spacing)) / 2;
+            planeHeight = (height - ((2 * height) / spacing)) / 2;
         }
 
         protected void paintComponent(Graphics g) {
@@ -200,13 +233,6 @@ public class GraphVisualizer {
 
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            width = this.getWidth();
-            height = this.getHeight();
-
-            // only the width and height of one side
-            planeWidth = (width - ((2 * width) / spacing)) / 2;
-            planeHeight = (height - ((2 * height) / spacing)) / 2;
 
             drawPlane(g2, width, height, planeWidth, planeHeight);
             drawDynamic(g2, width, height, planeWidth, planeHeight);
@@ -216,8 +242,8 @@ public class GraphVisualizer {
         void drawUI(Graphics2D g2, int width, int height, double planeWidth, double planeHeight) {
             // Draw statistic in corner
             g2.setColor(Color.BLACK);
-            g2.drawString("Width: " + width, (float) (width - 100), (float) (height - 50));
-            g2.drawString("Height: " + height, (float) (width - 100), (float) (height - 40));
+            g2.drawString("Width: " + width, (float) (width - 100), (float) (height - 14));
+            g2.drawString("Height: " + height, (float) (width - 100), (float) (height - 4));
         }
 
         void drawDynamic(Graphics2D g2, int width, int height, double planeWidth, double planeHeight) {
